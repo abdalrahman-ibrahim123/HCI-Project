@@ -1,0 +1,804 @@
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Archive-Records.aspx.cs" Inherits="HCI.Archive_Records" %>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Advanced Archive Records Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #4361ee;
+      --primary-dark: #3a56d4;
+      --dark: #0f172a;
+      --darker: #0a0f24;
+      --light: #f8fafc;
+      --gray: #94a3b8;
+      --gray-dark: #64748b;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --card-bg: rgba(30, 41, 59, 0.6);
+      --sidebar-width: 260px;
+      --transition: all 0.3s ease;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: linear-gradient(135deg, var(--dark), #1e293b);
+      color: var(--light);
+      min-height: 100vh;
+      display: flex;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    .app-container {
+      display: flex;
+      width: 100%;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: var(--sidebar-width);
+      background: var(--darker);
+      padding: 1.5rem 1rem;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+      z-index: 100;
+      transition: var(--transition);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 2rem;
+      padding: 0 0.5rem;
+    }
+
+    .logo img {
+      width: 36px;
+      height: 36px;
+      object-fit: contain;
+      border-radius: 10px;
+    }
+
+    .logo-icon {
+      background: var(--primary);
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+    }
+
+    .logo-text {
+      font-size: 1.5rem;
+      font-weight: 700;
+      background: linear-gradient(to right, #f8fafc);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .nav-links {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      flex: 1;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.85rem 1rem;
+      border-radius: 8px;
+      color: var(--gray);
+      text-decoration: none;
+      transition: var(--transition);
+      font-weight: 500;
+    }
+
+    .nav-link:hover {
+      background: rgba(67, 97, 238, 0.15);
+      color: var(--light);
+    }
+
+    .nav-link.active {
+      background: rgba(67, 97, 238, 0.2);
+      color: var(--primary);
+    }
+
+    .nav-link i {
+      font-size: 1.1rem;
+      width: 24px;
+      text-align: center;
+    }
+
+    .user-info {
+      margin-top: auto;
+      padding: 1rem;
+      background: rgba(15, 23, 42, 0.5);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), #8a2be2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+    }
+
+    .user-details {
+      flex: 1;
+    }
+
+    .user-name {
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .user-email {
+      font-size: 0.8rem;
+      color: var(--gray);
+    }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      overflow: auto;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+      background: var(--card-bg);
+      padding: 1.25rem;
+      border-radius: 12px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .page-title {
+      font-size: 1.75rem;
+      font-weight: 700;
+      background: linear-gradient(to right, #f8fafc);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .date-display {
+      font-size: 0.9rem;
+      color: var(--gray);
+    }
+
+    /* Stats Cards */
+    .stats-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+
+    .stat-card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 1.5rem;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+      transition: var(--transition);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--primary);
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      margin: 10px 0;
+      background: linear-gradient(to right, #9bbcf9, #b9fbc0);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .stat-label {
+      color: var(--gray);
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .stat-label i {
+      font-size: 1.1rem;
+    }
+
+    /* Search & Filters */
+    .search-bar {
+      display: flex;
+      gap: 1rem;
+      background: var(--card-bg);
+      padding: 1rem;
+      border-radius: 12px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .search-group {
+      flex: 1;
+      position: relative;
+    }
+
+    .search-group i {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--gray);
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 0.85rem 1rem 0.85rem 3rem;
+      border-radius: 8px;
+      border: none;
+      background: rgba(15, 23, 42, 0.4);
+      color: var(--light);
+      font-size: 0.95rem;
+    }
+
+    .search-input:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px var(--primary);
+    }
+
+    .filter-select {
+      padding: 0.85rem 1rem;
+      border-radius: 8px;
+      border: none;
+      background: rgba(15, 23, 42, 0.4);
+      color: var(--light);
+      font-size: 0.95rem;
+      min-width: 160px;
+    }
+
+    .filter-select:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px var(--primary);
+    }
+
+    /* Table */
+    .table-container {
+      background: var(--card-bg);
+      border-radius: 12px;
+      overflow: hidden;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead {
+      background: rgba(15, 23, 42, 0.7);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    th {
+      padding: 1.25rem 1.5rem;
+      text-align: left;
+      font-weight: 600;
+      color: var(--gray);
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    tbody tr {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      transition: var(--transition);
+    }
+
+    tbody tr:hover {
+      background: rgba(67, 97, 238, 0.05);
+    }
+
+    td {
+      padding: 1.25rem 1.5rem;
+    }
+
+    .tag {
+      padding: 0.35rem 0.85rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      display: inline-block;
+    }
+
+    .book {
+      background: rgba(67, 97, 238, 0.15);
+      color: #9bbcf9;
+    }
+
+    .transaction {
+      background: rgba(245, 158, 11, 0.15);
+      color: #ffde94;
+    }
+
+    .user {
+      background: rgba(16, 185, 129, 0.15);
+      color: #b9fbc0;
+    }
+
+    .archived {
+      background: rgba(138, 43, 226, 0.15);
+      color: #ddbdfc;
+    }
+
+    .purged {
+      background: rgba(239, 68, 68, 0.15);
+      color: #ff9e9e;
+    }
+
+    .actions {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .action-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--gray);
+      cursor: pointer;
+      transition: var(--transition);
+      border: none;
+    }
+
+    .action-btn:hover {
+      background: var(--primary);
+      color: white;
+      transform: translateY(-2px);
+    }
+
+    /* Pagination */
+    .pagination {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.25rem 1.5rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .page-info {
+      font-size: 0.9rem;
+      color: var(--gray);
+    }
+
+    .page-controls {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .page-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--light);
+      cursor: pointer;
+      transition: var(--transition);
+      border: none;
+    }
+
+    .page-btn:hover {
+      background: var(--primary);
+    }
+
+    .page-btn.active {
+      background: var(--primary);
+    }
+
+    .page-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Responsive */
+    @media (max-width: 992px) {
+      .app-container {
+        flex-direction: column;
+      }
+      
+      .sidebar {
+        width: 100%;
+        padding: 1rem;
+      }
+      
+      .nav-links {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 0.25rem;
+      }
+      
+      .nav-link {
+        padding: 0.75rem;
+      }
+      
+      .nav-link span {
+        display: none;
+      }
+      
+      .main-content {
+        padding: 1.5rem;
+      }
+      
+      .search-bar {
+        flex-wrap: wrap;
+      }
+      
+      .filter-select {
+        min-width: auto;
+        flex: 1;
+      }
+      
+      .stats-container {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+      
+      table {
+        display: block;
+        overflow-x: auto;
+      }
+      
+      .stats-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .search-bar {
+        gap: 0.75rem;
+      }
+      
+      .filter-select {
+        min-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="logo">
+        <img src="Image/BUiD.png" alt="BUiD">
+        <div class="logo-text">BUID</div>
+      </div>
+      
+      <div class="nav-links">
+        <a href="<%= ResolveUrl("~/Admin-Dashboard.aspx") %>" class="nav-link">
+          <i class="fas fa-tachometer-alt"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="<%= ResolveUrl("~/user-managment.aspx") %>" class="nav-link">
+          <i class="fas fa-users"></i>
+          <span>User Management</span>
+        </a>
+        <a href="#" class="nav-link">
+          <i class="fas fa-cogs"></i>
+          <span>Settings</span>
+        </a>
+        <a href="#" class="nav-link">
+          <i class="fas fa-chart-line"></i>
+          <span>Reports</span>
+        </a>
+        <a href="#" class="nav-link active">
+          <i class="fas fa-archive"></i>
+          <span>Archive Records</span>
+        </a>
+      </div>
+      
+      <div class="user-info">
+        <div class="user-avatar">A</div>
+        <div class="user-details">
+          <div class="user-name">Admin</div>
+          <div class="user-email">admin@buid.edu</div>
+        </div>
+        <button class="action-btn">
+          <i class="fas fa-cog"></i>
+        </button>
+      </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+      <div class="header">
+        <h1 class="page-title">Archive Records</h1>
+      </div>
+      
+      <!-- Search & Filters -->
+      <div class="search-bar">
+        <div class="search-group">
+          <i class="fas fa-search"></i>
+          <input type="text" class="search-input" id="search" placeholder="Search records by ID or description...">
+        </div>
+        
+        <select class="filter-select" id="typeFilter">
+          <option value="">All Types</option>
+          <option value="Book">Book</option>
+          <option value="Transaction">Transaction</option>
+          <option value="User">User</option>
+        </select>
+        
+        <select class="filter-select" id="statusFilter">
+          <option value="">All Statuses</option>
+          <option value="Archived">Archived</option>
+          <option value="Purged">Purged</option>
+        </select>
+      </div>
+      
+      <!-- Table -->
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Record ID</th>
+              <th>Description</th>
+              <th>Type</th>
+              <th>Status</th>
+              <th>Archived Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>#BK-2025-0452</td>
+              <td>"Design Patterns" by Erich Gamma</td>
+              <td><span class="tag book">Book</span></td>
+              <td><span class="tag archived">Archived</span></td>
+              <td>2022-01-15</td>
+              <td>
+                <div class="actions">
+                  <button class="action-btn" title="Restore">
+                    <i class="fas fa-rotate-left"></i>
+                  </button>
+                  <button class="action-btn" title="Download">
+                    <i class="fas fa-download"></i>
+                  </button>
+                  <button class="action-btn" title="View Details">
+                    <i class="fas fa-eye"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            
+            <tr>
+              <td>#TR-2022-1287</td>
+              <td>Checkout #1287 (User: RSmith)</td>
+              <td><span class="tag transaction">Transaction</span></td>
+              <td><span class="tag archived">Archived</span></td>
+              <td>2025-03-22</td>
+              <td>
+                <div class="actions">
+                  <button class="action-btn" title="Restore">
+                    <i class="fas fa-rotate-left"></i>
+                  </button>
+                  <button class="action-btn" title="Download">
+                    <i class="fas fa-download"></i>
+                  </button>
+                  <button class="action-btn" title="View Details">
+                    <i class="fas fa-eye"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            
+            <tr>
+              <td>#US-2024-0341</td>
+              <td>Thomas Wilson (Inactive since 2023)</td>
+              <td><span class="tag user">User</span></td>
+              <td><span class="tag purged">Purged</span></td>
+              <td>2023-02-10</td>
+              <td>
+                <div class="actions">
+                  <button class="action-btn" title="View Details">
+                    <i class="fas fa-eye"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            
+            <tr>
+              <td>#TR-2021-2564</td>
+              <td>Fine Payment #2564 (User: MPaul)</td>
+              <td><span class="tag transaction">Transaction</span></td>
+              <td><span class="tag purged">Purged</span></td>
+              <td>2024-01-30</td>
+              <td>
+                <div class="actions">
+                  <button class="action-btn" title="View Details">
+                    <i class="fas fa-eye"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            
+            <tr>
+              <td>#BK-2020-0789</td>
+              <td>"Clean Code" by Robert Martin</td>
+              <td><span class="tag book">Book</span></td>
+              <td><span class="tag archived">Archived</span></td>
+              <td>2025-02-18</td>
+              <td>
+                <div class="actions">
+                  <button class="action-btn" title="Restore">
+                    <i class="fas fa-rotate-left"></i>
+                  </button>
+                  <button class="action-btn" title="Download">
+                    <i class="fas fa-download"></i>
+                  </button>
+                  <button class="action-btn" title="View Details">
+                    <i class="fas fa-eye"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        
+        <!-- Pagination -->
+        <div class="pagination">
+          <div class="page-info">Showing 1-5 of 1,842 records</div>
+          <div class="page-controls">
+            <button class="page-btn" disabled>
+              <i class="fas fa-chevron-left"></i>
+            </button>
+            <button class="page-btn active">1</button>
+            <button class="page-btn">2</button>
+            <button class="page-btn">3</button>
+            <button class="page-btn">4</button>
+            <button class="page-btn">
+              <i class="fas fa-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+      document.addEventListener('DOMContentLoaded', function () {
+          // Search functionality
+          const searchInput = document.getElementById('search');
+          searchInput.addEventListener('input', function () {
+              const searchTerm = this.value.toLowerCase();
+              const rows = document.querySelectorAll('tbody tr');
+
+              rows.forEach(row => {
+                  const text = row.textContent.toLowerCase();
+                  if (text.includes(searchTerm)) {
+                      row.style.display = '';
+                  } else {
+                      row.style.display = 'none';
+                  }
+              });
+          });
+
+          // Filter functionality
+          const typeFilter = document.getElementById('typeFilter');
+          const statusFilter = document.getElementById('statusFilter');
+
+          typeFilter.addEventListener('change', filterTable);
+          statusFilter.addEventListener('change', filterTable);
+
+          function filterTable() {
+              const typeValue = typeFilter.value;
+              const statusValue = statusFilter.value;
+              const rows = document.querySelectorAll('tbody tr');
+
+              rows.forEach(row => {
+                  const typeCell = row.cells[2].textContent.trim();
+                  const statusCell = row.cells[3].textContent.trim();
+
+                  const typeMatch = !typeValue || typeCell === typeValue;
+                  const statusMatch = !statusValue || statusCell === statusValue;
+
+                  if (typeMatch && statusMatch) {
+                      row.style.display = '';
+                  } else {
+                      row.style.display = 'none';
+                  }
+              });
+          }
+
+          // Pagination buttons
+          document.querySelectorAll('.page-btn').forEach(btn => {
+              if (!btn.disabled && !btn.querySelector('i')) {
+                  btn.addEventListener('click', function () {
+                      document.querySelector('.page-btn.active').classList.remove('active');
+                      this.classList.add('active');
+                  });
+              }
+          });
+
+          // Action buttons
+          document.querySelectorAll('.action-btn').forEach(btn => {
+              btn.addEventListener('click', function () {
+                  const action = this.title;
+                  const row = this.closest('tr');
+                  const recordId = row.cells[0].textContent;
+
+                  let message = '';
+                  switch (action) {
+                      case 'Restore':
+                          message = `Restoring record: ${recordId}`;
+                          break;
+                      case 'Download':
+                          message = `Downloading record: ${recordId}`;
+                          break;
+                      case 'View Details':
+                          message = `Viewing details: ${recordId}`;
+                          break;
+                  }
+
+                  if (message) {
+                      alert(message);
+                  }
+              });
+          });
+      });
+  </script>
+</body>
+</html>

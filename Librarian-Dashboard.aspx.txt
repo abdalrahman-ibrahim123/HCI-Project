@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Library Dashboard - Collapsible Navigation</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-blue: #003b71;
+      --accent-red: #f44336;
+      --light-gray: #f4f4f4;
+      --dark-blue: #001f3d;
+      --text-dark: #333;
+      --text-light: #fff;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      background: linear-gradient(135deg, rgba(0, 59, 113, 0.9), rgba(0, 31, 61, 0.95)), 
+                  url('https://img.freepik.com/free-vector/abstract-digital-grid-blue-background_53876-111548.jpg') no-repeat center center fixed;
+      background-size: cover;
+      color: var(--text-dark);
+      min-height: 100vh;
+      padding: 0;
+    }
+    
+    /* Header Styles */
+    .header {
+      background: var(--dark-blue);
+      color: var(--text-light);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.8rem 2rem;
+      flex-wrap: wrap;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      position: relative;
+    }
+    
+    .logo-container {
+      display: flex;
+      align-items: center;
+    }
+    
+    .logo {
+      height: 60px;
+      margin-right: 1.5rem;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    }
+    
+    .social-icons {
+      display: flex;
+      gap: 1rem;
+    }
+    
+    .social-icons i {
+      font-size: 1.2rem;
+      color: var(--text-light);
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    
+    .social-icons i:hover {
+      color: #4dabf7;
+      transform: translateY(-2px);
+    }
+    
+    .contact-link {
+      color: var(--text-light);
+      text-decoration: none;
+      font-weight: 500;
+      margin-left: 1.5rem;
+      transition: all 0.3s ease;
+    }
+    
+    .contact-link:hover {
+      color: #4dabf7;
+    }
+    
+    .account-links {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    
+    .account-links a {
+      color: var(--text-light);
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+    
+    .account-links a:hover {
+      color: #4dabf7;
+    }
+    
+    .separator {
+      color: rgba(255, 255, 255, 0.5);
+    }
+    
+    /* Collapsible Navigation */
+    .navbar-container {
+      position: relative;
+      background: var(--light-gray);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    }
+
+    .hamburger {
+      position: absolute;
+      top: 0.8rem;
+      left: 1.2rem;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      display: none;
+      z-index: 100;
+      padding: 0.5rem;
+    }
+
+    .hamburger i {
+      font-size: 1.8rem;
+      color: var(--dark-blue);
+    }
+    
+    .navbar {
+      display: flex;
+      justify-content: center;
+      padding: 0.8rem;
+      flex-wrap: wrap;
+      transition: all 0.4s ease;
+    }
+    
+    .nav-link {
+      margin: 0 1.2rem;
+      text-decoration: none;
+      color: var(--dark-blue);
+      font-weight: 500;
+      padding: 0.5rem 0;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+    
+    .nav-link:after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 3px;
+      background: var(--primary-blue);
+      transition: all 0.3s ease;
+    }
+    
+    .nav-link:hover:after,
+    .nav-link.active:after {
+      width: 100%;
+    }
+    
+    .add-book-btn {
+      background: linear-gradient(to right, var(--primary-blue), var(--dark-blue));
+      color: var(--text-light);
+      padding: 0.5rem 1.5rem;
+      border: none;
+      border-radius: 30px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 10px rgba(0, 59, 113, 0.3);
+      margin-left: 1.5rem;
+    }
+    
+    .add-book-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 15px rgba(0, 59, 113, 0.4);
+    }
+    
+    /* Main Content */
+    .dashboard {
+      padding: 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    
+    .welcome-section {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .welcome-title {
+      font-size: 1.8rem;
+      color: var(--text-light);
+      font-weight: 600;
+    }
+    
+    /* Summary Cards */
+    .summary-cards {
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 2.5rem;
+    }
+    
+    .summary-card {
+      flex: 1;
+      min-width: 220px;
+      background: var(--text-light);
+      padding: 1.8rem 1.5rem;
+      border-radius: 16px;
+      box-shadow: 0 8px 30px rgba(0, 59, 113, 0.15);
+      text-align: center;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .summary-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 15px 35px rgba(0, 59, 113, 0.25);
+    }
+    
+    .summary-card:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 5px;
+      background: var(--primary-blue);
+    }
+    
+    .summary-card.overdue:before { background: var(--accent-red); }
+    
+    .card-title {
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--dark-blue);
+      gap: 0.5rem;
+    }
+    
+    .card-value {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--dark-blue);
+    }
+    
+    .overdue-value {
+      color: var(--accent-red);
+    }
+    
+    /* Overdue Books Section */
+    .content-section {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+    }
+    
+    .overdue-books {
+      flex: 2;
+      min-width: 300px;
+      background: var(--text-light);
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow: 0 8px 30px rgba(0, 59, 113, 0.15);
+    }
+    
+    .section-title {
+      font-size: 1.4rem;
+      color: var(--dark-blue);
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+    }
+    
+    .books-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      margin-top: 1.2rem;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    
+    .books-table th, .books-table td {
+      padding: 1rem;
+      text-align: left;
+      border-bottom: 1px solid rgba(221, 221, 221, 0.5);
+    }
+    
+    .books-table th {
+      background: var(--primary-blue);
+      color: var(--text-light);
+      font-weight: 500;
+      text-transform: uppercase;
+      font-size: 0.9rem;
+      letter-spacing: 0.5px;
+    }
+    
+    .books-table tr:nth-child(even) {
+      background: rgba(232, 241, 253, 0.4);
+    }
+    
+    .books-table tr:hover {
+      background: rgba(232, 241, 253, 0.8);
+    }
+    
+    .status-badge {
+      color: var(--text-light);
+      background: var(--accent-red);
+      padding: 0.4rem 0.8rem;
+      border-radius: 30px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      display: inline-block;
+      min-width: 90px;
+      text-align: center;
+    }
+    
+    .check-btn {
+      margin-top: 1.5rem;
+      padding: 0.8rem 1.8rem;
+      background: linear-gradient(to right, var(--primary-blue), var(--dark-blue));
+      color: var(--text-light);
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 10px rgba(0, 59, 113, 0.3);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-left: auto;
+    }
+    
+    .check-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 15px rgba(0, 59, 113, 0.4);
+    }
+    
+    /* Room Schedule Section */
+    .room-schedule {
+      flex: 1;
+      min-width: 300px;
+      background: var(--text-light);
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow: 0 8px 30px rgba(0, 59, 113, 0.15);
+    }
+    
+    .schedule-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .schedule-day {
+      text-align: center;
+    }
+    
+    .day-title {
+      font-weight: 600;
+      color: var(--dark-blue);
+      margin-bottom: 0.5rem;
+      font-size: 1.1rem;
+    }
+    
+    .room-info {
+      color: var(--primary-blue);
+      font-weight: 500;
+      font-size: 1rem;
+    }
+    
+    /* Categories Distribution */
+    .categories-section {
+      margin-top: 2rem;
+    }
+    
+    .categories-title {
+      font-size: 1.2rem;
+      color: var(--dark-blue);
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+    
+    .pie-chart {
+      width: 150px;
+      height: 150px;
+      background: conic-gradient(#ff6384 0% 25%, #36a2eb 25% 50%, #ffcd56 50% 75%, #4bc0c0 75% 100%);
+      border-radius: 50%;
+      margin: 0 auto 1rem;
+      position: relative;
+    }
+    
+    .pie-chart-legend {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .legend-color {
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+    }
+    
+    .legend-color.fiction { background: #ff6384; }
+    .legend-color.non-fiction { background: #36a2eb; }
+    .legend-color.history { background: #ffcd56; }
+    .legend-color.science { background: #4bc0c0; }
+    
+    /* Responsive Design */
+    @media (max-width: 992px) {
+      .content-section {
+        flex-direction: column;
+      }
+      
+      .overdue-books, .room-schedule {
+        width: 100%;
+      }
+      
+      .navbar {
+        justify-content: flex-start;
+      }
+      
+      .nav-link {
+        margin: 0.5rem 1.2rem;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .header {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+      }
+      
+      .logo-container {
+        justify-content: center;
+        margin-bottom: 1rem;
+      }
+      
+      .social-icons {
+        justify-content: center;
+        margin-bottom: 1rem;
+      }
+      
+      .button-group {
+        flex-direction: column;
+        align-items: flex-end;
+      }
+      
+      .form-button {
+        width: 100%;
+      }
+      
+      /* Collapsible Navbar Styles */
+      .navbar-container {
+        padding: 0;
+      }
+      
+      .hamburger {
+        display: block;
+      }
+      
+      .navbar {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 0;
+        height: 0;
+        background: var(--light-gray);
+        flex-direction: column;
+        padding: 4rem 0 1rem 0;
+        overflow: hidden;
+        opacity: 0;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        z-index: 99;
+      }
+      
+      .navbar.show {
+        width: 250px;
+        height: auto;
+        opacity: 1;
+        padding: 4rem 1rem 1rem;
+      }
+      
+      .nav-link {
+        margin: 0.8rem 0;
+        padding: 0.8rem 1rem;
+        width: 100%;
+      }
+      
+      .nav-link:after {
+        height: 2px;
+      }
+      
+      .add-book-btn {
+        margin: 1rem 0 0;
+        width: 100%;
+        padding: 0.8rem;
+      }
+      
+      .summary-cards {
+        flex-direction: column;
+      }
+      
+      .schedule-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .dashboard {
+        padding: 1rem;
+      }
+      
+      .books-table {
+        font-size: 0.85rem;
+      }
+      
+      .books-table th, .books-table td {
+        padding: 0.7rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header Section -->
+  <header class="header">
+    <div class="logo-container">
+      <img src="Image/BUiD.png" alt="BUiD" class="logo">
+      <div class="social-icons">
+        <i class="fab fa-youtube"></i>
+        <i class="fab fa-instagram"></i>
+        <i class="fab fa-twitter"></i>
+        <i class="fab fa-facebook"></i>
+      </div>
+      <a href="#" class="contact-link">Contact</a>
+    </div>
+    <div class="account-links">
+      <a href="#">My Account</a>
+      <span class="separator">|</span>
+      <a href="#">Sign Out</a>
+    </div>
+  </header>
+  
+  <!-- Navigation -->
+  <div class="navbar-container">
+    <button class="hamburger">
+      <i class="fas fa-bars"></i>
+    </button>
+    <nav class="navbar">
+      <a href="#" class="nav-link active">Dashboard</a>
+      <a href="#" class="nav-link">Catalog</a>
+      <a href="#" class="nav-link">Patrons</a>
+      <a href="#" class="nav-link">Schedule</a>
+      <a href="#" class="nav-link">Settings</a>
+      <button class="add-book-btn" onclick="window.location.href='Add-Book.aspx'">+ Add New Book</button>
+    </nav>
+  </div>
+  
+  <!-- Main Content -->
+  <main class="dashboard">
+    <!-- Welcome Section -->
+    <section class="welcome-section">
+      <h1 class="welcome-title">Welcome Back Ahmed.</h1>
+    </section>
+    
+    <!-- Summary Cards -->
+    <div class="summary-cards">
+      <div class="summary-card overdue">
+        <h3 class="card-title"><i class="fas fa-exclamation-triangle"></i> Overdue Books</h3>
+        <p class="card-value overdue-value" id="overdueCount">15</p>
+      </div>
+      <div class="summary-card">
+        <h3 class="card-title"><i class="fas fa-book"></i> Total Categories</h3>
+        <p class="card-value" id="totalCategories">24</p>
+      </div>
+      <div class="summary-card">
+        <h3 class="card-title"><i class="fas fa-headset"></i> Customer Inquiries</h3>
+        <p class="card-value" id="inquiries">5</p>
+      </div>
+    </div>
+    
+    <!-- Content Section -->
+    <div class="content-section">
+      <!-- Overdue Books -->
+      <section class="overdue-books">
+        <h2 class="section-title"><i class="fas fa-clock"></i> Overdue Books</h2>
+        
+        <table class="books-table">
+          <thead>
+            <tr>
+              <th>Book Title</th>
+              <th>Student ID</th>
+              <th>Due Date</th>
+              <th>Days Overdue</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>The Great Gatsby</td>
+              <td>2300/854</td>
+              <td>2025-02-22</td>
+              <td>12</td>
+              <td><span class="status-badge">Overdue</span></td>
+            </tr>
+            <tr>
+              <td>The Age of AI</td>
+              <td>2300/887</td>
+              <td>2025-05-12</td>
+              <td>11</td>
+              <td><span class="status-badge">Overdue</span></td>
+            </tr>
+          </tbody>
+        </table>
+        
+        <button class="check-btn" onclick="checkNow()">
+          <i class="fas fa-search"></i> Check It Now
+        </button>
+      </section>
+      
+      <!-- Room Schedule -->
+      <section class="room-schedule">
+        <h2 class="section-title"><i class="fas fa-calendar-alt"></i> Room Schedule</h2>
+        
+        <div class="schedule-grid">
+          <div class="schedule-day">
+            <p class="day-title">Mon 15</p>
+            <p class="room-info">Study Room A</p>
+          </div>
+          <div class="schedule-day">
+            <p class="day-title">Tue 16</p>
+            <p class="room-info">Conference Room (10-12 AM)</p>
+          </div>
+          <div class="schedule-day">
+            <p class="day-title">Wed 17</p>
+            <p class="room-info">Study Room B (3-5 PM)</p>
+          </div>
+        </div>
+        
+        <div class="categories-section">
+          <h3 class="categories-title"><i class="fas fa-chart-pie"></i> Categories Distribution</h3>
+          
+          <div class="pie-chart"></div>
+          <div class="pie-chart-legend">
+            <div class="legend-item"><span class="legend-color fiction"></span>Fiction</div>
+            <div class="legend-item"><span class="legend-color non-fiction"></span>Non-Fiction</div>
+            <div class="legend-item"><span class="legend-color history"></span>History</div>
+            <div class="legend-item"><span class="legend-color science"></span>Science</div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+      // Collapsible navigation functionality
+      document.querySelector('.hamburger').addEventListener('click', function () {
+          document.querySelector('.navbar').classList.toggle('show');
+      });
+
+      // Close the menu when clicking outside of it
+      document.addEventListener('click', function (event) {
+          const navbar = document.querySelector('.navbar');
+          const hamburger = document.querySelector('.hamburger');
+
+          if (navbar.classList.contains('show') &&
+              !navbar.contains(event.target) &&
+              !hamburger.contains(event.target)) {
+              navbar.classList.remove('show');
+          }
+      });
+
+      // Simple hover effects for interactive elements
+      document.querySelectorAll('.summary-card, .nav-link, .add-book-btn, .check-btn').forEach(item => {
+          item.addEventListener('mouseenter', function () {
+              this.style.transform = 'translateY(-5px)';
+          });
+          item.addEventListener('mouseleave', function () {
+              this.style.transform = 'translateY(0)';
+          });
+      });
+
+      function checkNow() {
+          const overdueCount = Math.floor(Math.random() * 20);
+          document.getElementById('overdueCount').textContent = overdueCount;
+          alert(`Checked overdue books. Current count: ${overdueCount}`);
+      }
+  </script>
+</body>
+</html>
