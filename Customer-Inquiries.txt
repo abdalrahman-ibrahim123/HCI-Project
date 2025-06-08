@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Customer Inquiries Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background:url('Image/BG.jpg') no-repeat center center fixed;
+      background-size: 100% 100%;
+      background-size: cover;
+      color: #333;
+      min-height: 100vh;
+      padding: 0;
+    }
+
+    /* Header Styles */
+    .header {
+      background: #1a1a1a;
+      color: #fff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+    }
+
+    .logo {
+      height: 40px;
+      margin-right: 15px;
+    }
+
+    .social-icons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .social-icons i {
+      font-size: 1.2rem;
+      color: #fff;
+      transition: color 0.3s ease;
+    }
+
+    .social-icons i:hover {
+      color: #4dabf7;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .nav-links a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+
+    .nav-links a:hover {
+      color: #4dabf7;
+    }
+
+    .account-links {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .account-links a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+
+    .account-links a:hover {
+      color: #4dabf7;
+    }
+
+    /* Main Content */
+    .container {
+      max-width: 1200px;
+      margin: 20px auto;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+    }
+
+    .status-bar {
+      background: #2c2c2c;
+      color: #ccc;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.9rem;
+    }
+
+    .new-count {
+      background: #28a745;
+      color: #fff;
+      padding: 3px 10px;
+      border-radius: 15px;
+      margin-left: 8px;
+      font-size: 0.85rem;
+    }
+
+    .last-updated {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .last-updated i {
+      color: #4dabf7;
+    }
+
+    /* Inquiry Cards */
+    .inquiries-container {
+      padding: 0 40px 40px;
+      padding-top: 30px;
+    }
+
+    .inquiry-card {
+      background: #f8f9fa;
+      padding: 25px 30px;
+      border-radius: 10px;
+      margin-top: 25px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      border-left: 5px solid #003087;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      position: relative;
+      min-height: 180px;
+      width: 100%;
+      cursor: pointer;
+    }
+
+    .inquiry-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .inquiry-card.urgent {
+      border-left-color: #dc3545;
+    }
+
+    .inquiry-card.business {
+      border-left-color: #ffc107;
+    }
+
+    .customer-info {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .customer-icon {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      background: #e9ecef;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 15px;
+    }
+
+    .customer-icon i {
+      font-size: 1.5rem;
+      color: #003087;
+    }
+
+    .customer-details {
+      flex: 1;
+    }
+
+    .customer-name {
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin-bottom: 5px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .tag {
+      font-size: 0.85rem;
+      padding: 4px 12px;
+      border-radius: 15px;
+      font-weight: 600;
+    }
+
+    .tag.urgent {
+      background: #dc3545;
+      color: white;
+    }
+
+    .tag.business {
+      background: #ffc107;
+      color: #333;
+    }
+
+    .inquiry-content {
+      color: #555;
+      line-height: 1.7;
+      margin-bottom: 15px;
+      font-size: 1.0rem;
+    }
+
+    .meta-data {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.9rem;
+      color: #777;
+      border-top: 1px solid #e9ecef;
+      padding-top: 15px;
+    }
+
+    .time-ago {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .time-ago i {
+      color: #6c757d;
+    }
+
+    .details {
+      display: flex;
+      gap: 15px;
+    }
+
+    .detail-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .detail-item i {
+      color: #6c757d;
+    }
+
+    /* Divider */
+    .divider {
+      height: 1px;
+      background: linear-gradient(to right, transparent, #ddd, transparent);
+      margin: 25px 0;
+    }
+
+    /* Response Modal */
+    .response-modal {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      z-index: 1001;
+      width: 400px;
+    }
+
+    .modal-header {
+      background: #1a1a1a;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 5px 5px 0 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .modal-header i {
+      font-size: 1.2rem;
+    }
+
+    .modal-body {
+      padding: 20px;
+    }
+
+    .modal-body input,
+    .modal-body textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 1rem;
+    }
+
+    .modal-body textarea {
+      height: 150px;
+      resize: vertical;
+    }
+
+    .modal-buttons {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .modal-buttons button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .modal-buttons .attach-btn {
+      background: #007bff;
+      color: #fff;
+    }
+
+    .modal-buttons .send-btn {
+      background: #28a745;
+      color: #fff;
+    }
+
+    .modal-buttons button:hover {
+      opacity: 0.9;
+    }
+
+    /* Success Modal */
+    .success-modal {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      z-index: 1001;
+      width: 350px;
+      text-align: center;
+    }
+
+    .success-modal i {
+      font-size: 2.5rem;
+      color: #28a745;
+      margin-bottom: 15px;
+    }
+
+    .success-modal h2 {
+      font-size: 1.5rem;
+      margin-bottom: 10px;
+    }
+
+    .success-modal p {
+      color: #666;
+      margin-bottom: 20px;
+    }
+
+    .success-modal .back-btn {
+      background: #28a745;
+      color: #fff;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .success-modal .back-btn:hover {
+      opacity: 0.9;
+    }
+
+    /* Overlay */
+    .overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .header {
+        flex-direction: column;
+        padding: 10px;
+        text-align: center;
+      }
+
+      .logo-container, .nav-links, .account-links {
+        margin: 5px 0;
+      }
+
+      .container {
+        max-width: 90%;
+      }
+
+      .status-bar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        padding: 15px;
+      }
+
+      .inquiries-container {
+        padding: 0 20px 20px;
+      }
+
+      .inquiry-card {
+        padding: 20px;
+        min-height: 200px;
+      }
+
+      .response-modal {
+        width: 90%;
+      }
+
+      .success-modal {
+        width: 90%;
+      }
+
+      .meta-data {
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .details {
+        flex-wrap: wrap;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .nav-links {
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .account-links {
+        flex-direction: column;
+        gap: 5px;
+      }
+
+      .customer-name {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+      }
+
+      .inquiry-card {
+        min-height: 220px;
+        padding: 15px;
+      }
+
+      .inquiries-container {
+        padding: 0 15px 15px;
+      }
+
+      .response-modal {
+        width: 95%;
+      }
+
+      .success-modal {
+        width: 95%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header Section -->
+  <header class="header">
+    <div class="logo-container">
+      <img src="Image/BUiD.png" alt="BUiD" class="logo">
+      <div class="social-icons">
+        <i class="fab fa-youtube"></i>
+        <i class="fab fa-instagram"></i>
+        <i class="fab fa-twitter"></i>
+        <i class="fab fa-facebook"></i>
+      </div>
+      <a href="#" class="contact-link">Contact</a>
+    </div>
+    <div class="nav-links">
+      <a href="#">Dashboard</a>
+      <a href="#">Catalog</a>
+      <a href="#">Patrons</a>
+      <a href="#">Schedule</a>
+      <a href="#">Settings</a>
+    </div>
+    <div class="account-links">
+      <a href="#">My Account</a> | <a href="#">Sign Out</a>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <div class="container">
+    <!-- Status Bar -->
+    <div class="status-bar">
+      <div class="inquiry-count">
+        <span>5 New Inquiries</span>
+        <span class="new-count">Priority</span>
+      </div>
+      <div class="last-updated">
+        <i class="fas fa-sync-alt"></i>
+        <span id="lastUpdated">Last updated: 2 min ago</span>
+      </div>
+    </div>
+    
+    <!-- Inquiries Container -->
+    <div class="inquiries-container">
+      <!-- First Inquiry Card -->
+      <div class="inquiry-card urgent" data-customer="Johnathan Doe">
+        <div class="customer-info">
+          <div class="customer-icon">
+            <i class="fas fa-user"></i>
+          </div>
+          <div class="customer-details">
+            <div class="customer-name">
+              <span>Johnathan Doe</span>
+              <span class="tag urgent">Urgent</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="inquiry-content">
+          Critical system failure after recent update. Production environment down. Require immediate technical assistance and escalation.
+        </div>
+        
+        <div class="meta-data">
+          <div class="time-ago">
+            <i class="far fa-clock"></i>
+            <span>45m ago</span>
+          </div>
+          <div class="details">
+            <div class="detail-item">
+              <i class="fas fa-headset"></i>
+              <span>Technical Support</span>
+            </div>
+            <div class="detail-item">
+              <i class="fas fa-paperclip"></i>
+              <span>2 attachments</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Divider -->
+      <div class="divider"></div>
+      
+      <!-- Second Inquiry Card -->
+      <div class="inquiry-card business" data-customer="Enterprise Solutions Ltd.">
+        <div class="customer-info">
+          <div class="customer-icon">
+            <i class="fas fa-building"></i>
+          </div>
+          <div class="customer-details">
+            <div class="customer-name">
+              <span>Enterprise Solutions Ltd.</span>
+              <span class="tag business">Business</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="inquiry-content">
+          Requesting enterprise pricing and SLA agreement details for 500+ users. Need custom integration documentation and security compliance specs.
+        </div>
+        
+        <div class="meta-data">
+          <div class="time-ago">
+            <i class="far fa-clock"></i>
+            <span>2h ago</span>
+          </div>
+          <div class="details">
+            <div class="detail-item">
+              <i class="fas fa-shopping-cart"></i>
+              <span>Sales Inquiry</span>
+            </div>
+            <div class="detail-item">
+              <i class="fas fa-users"></i>
+              <span>Team Access Requested</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Response Modal -->
+  <div class="overlay" id="overlay"></div>
+  <div class="response-modal" id="responseModal">
+    <div class="modal-header">
+      <i class="fas fa-envelope"></i>
+      <span>New Response</span>
+    </div>
+    <div class="modal-body">
+      <input type="text" id="recipient" placeholder="Johnathan Doe" readonly>
+      <input type="text" id="subject" placeholder="Subject">
+      <textarea id="message" placeholder="Type your response here..."></textarea>
+      <div class="modal-buttons">
+        <button class="attach-btn">Attach File</button>
+        <button class="send-btn">Send</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Success Modal -->
+  <div class="success-modal" id="successModal">
+    <i class="fas fa-check-circle"></i>
+    <h2>Message Send Successfully</h2>
+    <p>Message Send successfully! Thank you for your action.</p>
+    <button class="back-btn">Back</button>
+  </div>
+
+  <script>
+      // Update last updated time
+      function updateLastUpdated() {
+          const now = new Date();
+          const minutesAgo = Math.floor((new Date() - now) / (1000 * 60)) || 2; // Default to 2 min for demo
+          const lastUpdatedElement = document.getElementById('lastUpdated');
+          if (lastUpdatedElement) {
+              lastUpdatedElement.textContent = `Last updated: ${minutesAgo} min ago`;
+          }
+      }
+      updateLastUpdated();
+      setInterval(updateLastUpdated, 60000); // Update every minute
+
+      // Add hover effect to inquiry cards
+      const cards = document.querySelectorAll('.inquiry-card');
+      cards.forEach(card => {
+          card.addEventListener('mouseenter', () => {
+              card.style.transform = 'translateY(-5px)';
+              card.style.boxShadow = '0 8px 20px rgba(0, 0, 0, 0.15)';
+          });
+
+          card.addEventListener('mouseleave', () => {
+              card.style.transform = '';
+              card.style.boxShadow = '';
+          });
+
+          card.addEventListener('click', () => {
+              const customer = card.getAttribute('data-customer');
+              const modal = document.getElementById('responseModal');
+              const overlay = document.getElementById('overlay');
+              const recipientInput = document.getElementById('recipient');
+
+              recipientInput.value = customer;
+              modal.style.display = 'block';
+              overlay.style.display = 'block';
+
+              // Close modal when clicking outside
+              overlay.addEventListener('click', () => {
+                  modal.style.display = 'none';
+                  overlay.style.display = 'none';
+              });
+
+              // Close modal with Escape key
+              document.addEventListener('keydown', (e) => {
+                  if (e.key === 'Escape') {
+                      modal.style.display = 'none';
+                      overlay.style.display = 'none';
+                  }
+              });
+          });
+      });
+
+      // Handle Send button
+      document.querySelector('.send-btn').addEventListener('click', () => {
+          const modal = document.getElementById('responseModal');
+          const successModal = document.getElementById('successModal');
+          const overlay = document.getElementById('overlay');
+
+          // Hide response modal and show success modal
+          modal.style.display = 'none';
+          successModal.style.display = 'block';
+
+          // Close success modal when clicking Back
+          document.querySelector('.back-btn').addEventListener('click', () => {
+              successModal.style.display = 'none';
+              overlay.style.display = 'none';
+          });
+      });
+
+      // Handle Attach File button (for demo purposes, just log a message)
+      document.querySelector('.attach-btn').addEventListener('click', () => {
+          alert('File attachment functionality to be implemented.');
+      });
+  </script>
+</body>
+</html>
