@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Dashboard - Overdue Books</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background:url('Image/BG.jpg') no-repeat center center fixed;
+            background-size: 100% 100%;
+            min-height: 100vh;
+            color: #333;
+            padding-top: 100px;
+        }
+
+        .header {
+            background: #1a2a44;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header .logo img {
+            height: 40px;
+        }
+
+        .header .social-icons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .header .social-icons a {
+            color: #fff;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .header .social-icons a:hover {
+            color: #4dabf7;
+            transform: translateY(-2px);
+        }
+
+        .header .account {
+            display: flex;
+            gap: 15px;
+        }
+
+        .header .account a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            padding: 5px 10px;
+            border-radius: 4px;
+        }
+
+        .header .account a:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav {
+            background: #fff;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            position: fixed;
+            top: 60px;
+            width: 100%;
+            z-index: 999;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav a {
+            text-decoration: none;
+            color: #1a2a44;
+            font-weight: 600;
+            font-size: 1rem;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .nav a:hover, .nav a.active {
+            color: #1e6bc9;
+            background: #f0f7ff;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 20px;
+            margin-top: 40px;
+        }
+
+        .stats {
+            display: flex;
+            gap: 25px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .stat-box {
+            background: #fff;
+            padding: 20px 25px;
+            border-radius: 8px;
+            text-align: center;
+            min-width: 250px;
+            flex: 1;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-box:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-box.critical {
+            border-top: 4px solid #ff6b6b;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-box.critical::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #ff6b6b, #ff8e8e);
+        }
+
+        .stat-box h3 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: #555;
+        }
+
+        .stat-box p {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        .stat-box.critical p {
+            color: #ff6b6b;
+        }
+
+        .table-container {
+            width: 100%;
+            background: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #2a5298;
+            color: #fff;
+            font-weight: 600;
+            text-align: left;
+            padding: 16px 20px;
+        }
+
+        th:first-child {
+            border-top-left-radius: 8px;
+        }
+
+        th:last-child {
+            border-top-right-radius: 8px;
+        }
+
+        td {
+            padding: 14px 20px;
+            border-bottom: 1px solid #eee;
+            color: #444;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9fbfd;
+        }
+
+        tr:hover {
+            background-color: #f0f7ff;
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status.critical {
+            color: #ff6b6b;
+            font-weight: 700;
+        }
+
+        .status-icon {
+            background: #ffebee;
+            color: #ff6b6b;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn.email {
+            background: #1e6bc9;
+            color: #fff;
+        }
+
+        .action-btn.email:hover {
+            background: #1452a5;
+            color: #fff;
+        }
+
+        .action-btn.lost {
+            background: #ff6b6b;
+            color: #fff;
+        }
+
+        .action-btn.lost:hover {
+            background: #e55a5a;
+            color: #fff;
+        }
+
+        .fine {
+            font-weight: 600;
+            color: #ff6b6b;
+        }
+
+        .fine::before {
+            content: "₹";
+            margin-right: 2px;
+        }
+
+        .critical-indicator {
+            display: inline-block;
+            background: #ffebee;
+            color: #ff6b6b;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            margin-left: 8px;
+            font-weight: 600;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1001;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            width: 300px;
+            border: 2px solid #1e90ff;
+        }
+
+        .modal-content i {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .modal-content h3 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .modal-content p {
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            color: #555;
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: center;
+        }
+
+        .modal-buttons button {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .modal-buttons .send-btn {
+            background: #28a745;
+            color: #fff;
+        }
+
+        .modal-buttons .send-btn:hover {
+            background: #218838;
+        }
+
+        .modal-buttons .cancel-btn {
+            background: #dc3545;
+            color: #fff;
+        }
+
+        .modal-buttons .cancel-btn:hover {
+            background: #c82333;
+        }
+
+        .modal-buttons .back-btn {
+            background: #28a745;
+            color: #fff;
+        }
+
+        .modal-buttons .back-btn:hover {
+            background: #218838;
+        }
+
+        /* Success Modal Styles */
+        #emailSuccessModal .modal-content {
+            border-color: #28a745;
+        }
+
+        #emailSuccessModal .modal-content i {
+            color: #28a745;
+        }
+
+        @media (max-width: 1100px) {
+            .stats {
+                flex-direction: column;
+            }
+            
+            .stat-box {
+                min-width: 100%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding-top: 120px;
+            }
+            
+            .header {
+                flex-wrap: wrap;
+                padding: 10px;
+                gap: 10px;
+            }
+            
+            .nav {
+                top: 100px;
+                flex-wrap: wrap;
+                gap: 10px;
+                padding: 10px;
+            }
+            
+            .table-container {
+                overflow-x: auto;
+            }
+            
+            table {
+                min-width: 700px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo-container">
+            <div class="logo">
+                <img src="Image/BUiD.png" alt="BUiD" />
+            </div>
+            <div class="social-icons">
+                <a href="#"><i class="fab fa-youtube"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-facebook"></i></a>
+            </div>
+        </div>
+        <div class="account">
+            <a href="#">My Account</a>
+            <a href="#">Sign Out</a>
+        </div>
+    </div>
+
+    <div class="nav">
+        <a href="#" class="active">Dashboard</a>
+        <a href="#">Catalog</a>
+        <a href="#">Patrons</a>
+        <a href="#">Schedule</a>
+        <a href="#">Settings</a>
+    </div>
+
+    <div class="container">
+        <div class="stats">
+            <div class="stat-box critical">
+                <h3>Critical Overdues <span class="critical-indicator">>30 days</span></h3>
+                <p>7 items</p>
+            </div>
+            <div class="stat-box">
+                <h3>Total Overdue</h3>
+                <p>89 items</p>
+            </div>
+            <div class="stat-box">
+                <h3>Total Fines</h3>
+                <p> 750.0</p>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Book Title</th>
+                        <th>Student ID</th>
+                        <th>Due Date</th>
+                        <th>Days Overdue</th>
+                        <th>Fine</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>The Great Gatsby</td>
+                        <td>23001534</td>
+                        <td>2025-02-22</td>
+                        <td>12</td>
+                        <td class="fine">-6.75</td>
+                        <td class="status critical">
+                            <div class="status-icon">
+                                <i class="fas fa-exclamation"></i>
+                            </div>
+                            Critical
+                            <div class="actions">
+                                <button class="action-btn email"><i class="fas fa-envelope"></i></button>
+                                <button class="action-btn lost"><i class="fas fa-triangle-exclamation"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>The Age of AI</td>
+                        <td>23001897</td>
+                        <td>2025-05-12</td>
+                        <td>11</td>
+                        <td class="fine">-12.55</td>
+                        <td class="status critical">
+                            <div class="status-icon">
+                                <i class="fas fa-exclamation"></i>
+                            </div>
+                            Critical
+                            <div class="actions">
+                                <button class="action-btn email"><i class="fas fa-envelope"></i></button>
+                                <button class="action-btn lost"><i class="fas fa-triangle-exclamation"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>The Great Novels</td>
+                        <td>22007854</td>
+                        <td>2025-05-03</td>
+                        <td>22</td>
+                        <td class="fine">-20.99</td>
+                        <td class="status critical">
+                            <div class="status-icon">
+                                <i class="fas fa-exclamation"></i>
+                            </div>
+                            Critical
+                            <div class="actions">
+                                <button class="action-btn email"><i class="fas fa-envelope"></i></button>
+                                <button class="action-btn lost"><i class="fas fa-triangle-exclamation"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>The Essential Mark Twain</td>
+                        <td>23009544</td>
+                        <td>2025-04-22</td>
+                        <td>30</td>
+                        <td class="fine">-35.52</td>
+                        <td class="status critical">
+                            <div class="status-icon">
+                                <i class="fas fa-exclamation"></i>
+                            </div>
+                            Critical
+                            <div class="actions">
+                                <button class="action-btn email"><i class="fas fa-envelope"></i></button>
+                                <button class="action-btn lost"><i class="fas fa-triangle-exclamation"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Email Confirmation Modal -->
+    <div class="modal" id="emailModal">
+        <div class="modal-content">
+            <i class="fas fa-question-circle"></i>
+            <h3>Send Reminder?</h3>
+            <p>This will send an email/SMS to the patron</p>
+            <div class="modal-buttons">
+                <button class="send-btn" id="sendEmail">Send</button>
+                <button class="cancel-btn" id="cancelEmail">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Email Success Modal -->
+    <div class="modal" id="emailSuccessModal">
+        <div class="modal-content">
+            <i class="fas fa-check-circle"></i>
+            <h3>Message Send Successfully</h3>
+            <p>Message sent successfully! Thank you for your action.</p>
+            <div class="modal-buttons">
+                <button class="back-btn" id="backEmail">Back</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lost Confirmation Modal -->
+    <div class="modal" id="lostModal">
+        <div class="modal-content">
+            <i class="fas fa-exclamation-circle"></i>
+            <h3>Mark as Lost?</h3>
+            <p>This will initiate replacement procedures</p>
+            <div class="modal-buttons">
+                <button class="confirm-btn" id="confirmLost">Confirm</button>
+                <button class="cancel-btn" id="cancelLost">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="modal" id="successModal">
+        <div class="modal-content">
+            <i class="fas fa-check-circle"></i>
+            <h3>Book Mark As Lost</h3>
+            <p>The book has been marked as lost. Please follow up on replacement or fines. Thank you!</p>
+            <div class="modal-buttons">
+                <button class="back-btn" id="backBtn">Back</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const navLinks = document.querySelectorAll('.nav a');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function () {
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+
+            const tableRows = document.querySelectorAll('tbody tr');
+            tableRows.forEach(row => {
+                row.addEventListener('mouseenter', function () {
+                    this.style.transform = 'translateX(5px)';
+                    this.style.transition = 'transform 0.2s ease';
+                });
+                row.addEventListener('mouseleave', function () {
+                    this.style.transform = 'translateX(0)';
+                });
+            });
+
+            const actionButtons = document.querySelectorAll('.action-btn');
+            const emailModal = document.getElementById('emailModal');
+            const emailSuccessModal = document.getElementById('emailSuccessModal');
+            const sendEmailBtn = document.getElementById('sendEmail');
+            const cancelEmailBtn = document.getElementById('cancelEmail');
+            const backEmailBtn = document.getElementById('backEmail');
+            const lostModal = document.getElementById('lostModal');
+            const successModal = document.getElementById('successModal');
+            const confirmBtn = document.getElementById('confirmLost');
+            const cancelBtn = document.getElementById('cancelLost');
+            const backBtn = document.getElementById('backBtn');
+            let currentRow;
+
+            actionButtons.forEach(button => {
+                button.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    const action = this.querySelector('i').className;
+                    const bookTitle = this.closest('tr').querySelector('td:first-child').textContent;
+
+                    if (action.includes('envelope')) {
+                        currentRow = this.closest('tr');
+                        emailModal.style.display = 'flex';
+                    } else if (action.includes('triangle-exclamation')) {
+                        currentRow = this.closest('tr');
+                        lostModal.style.display = 'flex';
+                    }
+                });
+            });
+
+            sendEmailBtn.addEventListener('click', function () {
+                emailModal.style.display = 'none';
+                emailSuccessModal.style.display = 'flex';
+            });
+
+            cancelEmailBtn.addEventListener('click', function () {
+                emailModal.style.display = 'none';
+            });
+
+            backEmailBtn.addEventListener('click', function () {
+                emailSuccessModal.style.display = 'none';
+            });
+
+            confirmBtn.addEventListener('click', function () {
+                lostModal.style.display = 'none';
+                successModal.style.display = 'flex';
+            });
+
+            cancelBtn.addEventListener('click', function () {
+                lostModal.style.display = 'none';
+            });
+
+            backBtn.addEventListener('click', function () {
+                successModal.style.display = 'none';
+                if (currentRow) {
+                    currentRow.style.opacity = '0.5';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

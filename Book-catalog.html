@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Library Catalog</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background: url('Image/BG.jpg') no-repeat center center fixed;
+      background-size: 100% 100%;
+      color: #333;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header Styles */
+    header {
+      background: #1a252f;
+      color: #fff;
+      padding: 10px 20px;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo-social {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .logo img {
+      height: 50px;
+    }
+
+    .social-contact {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .social-contact a {
+      color: #fff;
+      font-size: 1.2rem;
+      text-decoration: none;
+    }
+
+    .social-contact a:hover {
+      color: #4dabf7;
+    }
+
+    .account-links a {
+      color: #fff;
+      text-decoration: none;
+      margin-left: 10px;
+      font-weight: 500;
+    }
+
+    .account-links a:hover {
+      color: #4dabf7;
+    }
+
+    .account-links span {
+      margin: 0 5px;
+      color: #aaa;
+    }
+
+    /* Navigation Styles */
+    nav {
+      background: #f5f5f5;
+      display: flex;
+      justify-content: center;
+      padding: 10px 0;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .nav-links a {
+      color: #2a5298;
+      font-weight: 600;
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+
+    .nav-links a:hover {
+      color: #1e3c72;
+    }
+
+    .search-bar {
+      position: relative;
+      width: 100%;
+      max-width: 300px;
+      margin: 20px auto;
+    }
+
+    .search-bar input {
+      width: 100%;
+      padding: 8px 40px 8px 15px;
+      border-radius: 20px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+      outline: none;
+    }
+
+    .search-bar i {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #666;
+    }
+
+    /* Main Section Styles */
+    main {
+      flex: 1;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .book-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+      width: 100%;
+      max-width: 1200px;
+    }
+
+    .book-card {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 580px;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      transition: transform 0.3s ease;
+    }
+
+    .book-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .book-card img {
+      width: 150px;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 5px;
+    }
+
+    .book-card .book-content {
+      flex: 1;
+    }
+
+    .book-card h2 {
+      font-size: 1.2rem;
+      color: #333;
+      margin-bottom: 5px;
+    }
+
+    .book-card .author {
+      font-size: 0.9rem;
+      color: #666;
+      margin-bottom: 10px;
+    }
+
+    .book-card .description {
+      font-size: 0.85rem;
+      color: #666;
+      margin-bottom: 15px;
+      line-height: 1.4;
+    }
+
+    .book-card .file-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.85rem;
+      color: #666;
+      margin-bottom: 15px;
+    }
+
+    .book-card .file-info i {
+      color: #ff0000;
+    }
+
+    .book-card .actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-start;
+    }
+
+    .book-card .actions button {
+      padding: 8px 15px;
+      border: none;
+      border-radius: 20px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .book-card .actions .read-btn {
+      background: #2a5298;
+      color: #fff;
+    }
+
+    .book-card .actions .read-btn:hover {
+      background: #1e3c72;
+    }
+
+    .book-card .actions .download-btn {
+      background: #f5f5f5;
+      color: #333;
+      border: 1px solid #ccc;
+    }
+
+    .book-card .actions .download-btn:hover {
+      background: #e0e0e0;
+    }
+
+    /* Success Modal Styles */
+    .success-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .success-modal-content {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      max-width: 400px;
+      width: 90%;
+    }
+
+    .success-modal-content .icon {
+      font-size: 3rem;
+      color: #00cc00;
+      margin-bottom: 15px;
+    }
+
+    .success-modal-content h2 {
+      margin-bottom: 15px;
+      font-size: 1.5rem;
+      color: #333;
+    }
+
+    .success-modal-content p {
+      font-size: 1rem;
+      color: #666;
+      margin-bottom: 20px;
+    }
+
+    .success-modal-content button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 25px;
+      font-weight: 600;
+      cursor: pointer;
+      background: #00cc00;
+      color: #fff;
+      transition: background 0.3s ease;
+    }
+
+    .success-modal-content button:hover {
+      background: #009900;
+    }
+
+    /* Read Online Modal Styles */
+    .read-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .read-modal-content {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: left;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      max-width: 600px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .read-modal-content h2 {
+      margin-bottom: 15px;
+      font-size: 1.5rem;
+      color: #333;
+    }
+
+    .read-modal-content p {
+      font-size: 1rem;
+      color: #666;
+      line-height: 1.6;
+      margin-bottom: 15px;
+    }
+
+    .read-modal-content button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 25px;
+      font-weight: 600;
+      cursor: pointer;
+      background: #2a5298;
+      color: #fff;
+      transition: background 0.3s ease;
+    }
+
+    .read-modal-content button:hover {
+      background: #1e3c72;
+    }
+
+    /* Responsive Design */
+    @media (min-width: 1200px) {
+      .book-card {
+        flex: 1 1 calc(50% - 20px);
+      }
+    }
+
+    @media (max-width: 1199px) {
+      .book-card {
+        max-width: 100%;
+        flex-direction: column;
+      }
+
+      .book-card img {
+        width: 100%;
+        height: auto;
+        margin-bottom: 15px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .top-bar {
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .logo-social {
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .social-contact {
+        justify-content: center;
+      }
+
+      .nav-links {
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .search-bar {
+        max-width: 100%;
+        padding: 0 20px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .book-card h2 {
+        font-size: 1rem;
+      }
+
+      .book-card .author, .book-card .description, .book-card .file-info {
+        font-size: 0.8rem;
+      }
+
+      .book-card .actions button {
+        padding: 6px 12px;
+        font-size: 0.9rem;
+      }
+
+      .read-modal-content {
+        max-width: 100%;
+        padding: 15px;
+      }
+
+      .read-modal-content h2 {
+        font-size: 1.2rem;
+      }
+
+      .read-modal-content p {
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="top-bar">
+      <div class="logo-social">
+        <div class="logo">
+          <img src="Image/BUiD.png" alt="BUiD">
+        </div>
+        <div class="social-contact">
+          <a href="#"><i class="fab fa-youtube"></i></a>
+          <a href="#"><i class="fab fa-instagram"></i></a>
+          <a href="#"><i class="fab fa-twitter"></i></a>
+          <a href="#"><i class="fab fa-facebook"></i></a>
+          <a href="#">Contact</a>
+        </div>
+      </div>
+      <div class="account-links">
+        <a href="#">My Account</a>
+        <span>|</span>
+        <a href="#">Sign Out</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Navigation -->
+  <nav>
+    <div class="nav-links">
+      <a href="#">About</a>
+      <a href="#">Events</a>
+      <a href="#">Services</a>
+      <a href="#">Help</a>
+      <a href="#">Contact US</a>
+    </div>
+  </nav>
+
+  <!-- Search Bar -->
+  <div class="search-bar">
+    <input type="text" value="artificial intelligence" readonly>
+    <i class="fas fa-search"></i>
+  </div>
+
+  <!-- Main Section -->
+  <main>
+    <div class="book-container">
+      <!-- Book Card 1 -->
+      <div class="book-card">
+        <img src="Image/AI-book.png" alt="Book Cover">
+        <div class="book-content">
+          <h2>Artificial Intelligence: A Textbook</h2>
+          <p class="author">by Charu C. Aggarwal</p>
+          <p class="description">"Artificial Intelligence: A Textbook" by Charu C. Aggarwal is a concise yet comprehensive guide covering AI fundamentals, including reasoning, machine learning, and knowledge graphs. Ideal for advanced professionals, students.</p>
+          <div class="file-info">
+            <i class="fas fa-file-pdf"></i>
+            <span>pdf</span>
+            <span>5.2 MB</span>
+          </div>
+          <div class="actions">
+            <button class="read-btn">Read online</button>
+            <button class="download-btn"><i class="fas fa-download"></i>Download</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Book Card 2 -->
+      <div class="book-card">
+        <img src="Image/AI-book2.png" alt="Book Cover">
+        <div class="book-content">
+          <h2>The Age of AI: "The Book We All Need"</h2>
+          <p class="author">by Henry A. Kissinger, Eric Schmidt, Daniel Huttenlocher</p>
+          <p class="description">"The Age of AI" by Kissinger, Schmidt, and Huttenlocher examines AI's transformational impact on society, politics, and ethics. It explores opportunities and risks in fields like medicine and defense, offering a concise guide for navigating the AI era.</p>
+          <div class="file-info">
+            <i class="fas fa-file-pdf"></i>
+            <span>pdf</span>
+            <span>5.2 MB</span>
+          </div>
+          <div class="actions">
+            <button class="read-btn">Read online</button>
+            <button class="download-btn"><i class="fas fa-download"></i>Download</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Success Modal -->
+  <div class="success-modal" id="successModal">
+    <div class="success-modal-content">
+      <div class="icon">✔</div>
+      <h2>Download Book Successfully</h2>
+      <p>You've successfully downloaded. Your e-book is ready for access anytime.<br>Enjoy your reading!</p>
+      <button id="backBtn">Back</button>
+    </div>
+  </div>
+
+  <!-- Read Online Modal -->
+  <div class="read-modal" id="readModal">
+    <div class="read-modal-content">
+      <h2>The Transformative Power of AI: Insights from The Age of AI</h2>
+      <p>Artificial intelligence (AI) is reshaping the fabric of human existence, influencing everything from healthcare to global security. In The Age of AI: And Our Human Future, Henry Kissinger, Eric Schmidt, and Daniel Huttenlocher explore how AI is not merely a technological advancement but a force that challenges conventional definitions of intelligence, offering a glimpse into the urgent need for a guiding philosophy in the AI era.</p>
+      <p>The authors argue that AI is transforming how we interact with information and make decisions. Unlike previously technologies, AI's ability to process vast datasets and generate insights surpasses human cognitive limits. For instance, it notes, "When knowledge becomes convictions, it becomes wisdom." This statement underscores AI's potential to elevate human understanding but also highlights a challenge.</p>
+      <p>Perhaps most profoundly, The Age of AI explores how AI challenges human identity. By automating tasks once considered uniquely human—such as strategic decision-making, AI forces us to redefine what it means to be human. The authors suggest that: "AI and knowledge itself." This shift requires human to adapt and evolve, ensuring a balance between technological progress and ethical considerations.</p>
+      <button id="closeReadModal">Back</button>
+    </div>
+  </div>
+
+  <script>
+      // Placeholder for future interactivity (e.g., search functionality)
+      const searchInput = document.querySelector('.search-bar input');
+      searchInput.addEventListener('focus', () => {
+          searchInput.removeAttribute('readonly');
+      });
+
+      // Show read modal when Read online button is clicked
+      const readButtons = document.querySelectorAll('.read-btn');
+      const readModal = document.getElementById('readModal');
+      const closeReadModal = document.getElementById('closeReadModal');
+
+      readButtons.forEach(btn => {
+          btn.addEventListener('click', () => {
+              readModal.style.display = 'flex';
+          });
+      });
+
+      closeReadModal.addEventListener('click', () => {
+          readModal.style.display = 'none';
+      });
+
+      // Show success modal when Download button is clicked
+      const downloadButtons = document.querySelectorAll('.download-btn');
+      const successModal = document.getElementById('successModal');
+      const backBtn = document.getElementById('backBtn');
+
+      downloadButtons.forEach(btn => {
+          btn.addEventListener('click', () => {
+              successModal.style.display = 'flex';
+          });
+      });
+
+      backBtn.addEventListener('click', () => {
+          successModal.style.display = 'none';
+      });
+  </script>
+</body>
+</html>

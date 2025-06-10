@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* ===== BASE & RESET ===== */
+    :root {
+      --primary: #013A63;
+      --primary-dark: #011627;
+      --accent: #4CC9F0;
+      --text: #E6F1FF;
+      --text-secondary: #A8B2D1;
+      --card-bg: rgba(255, 255, 255, 0.08);
+      --success: #3DDC97;
+      --warning: #FFD166;
+      --danger: #EF476F;
+      --transition: all 0.3s ease;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body, html {
+      height: 100%;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background:  url('Image/BG.jpg') no-repeat center center fixed;
+      background-size: 100% 100%;
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ===== LAYOUT CONTAINER ===== */
+    .container {
+      display: flex;
+      min-height: 100vh;
+      position: relative;
+    }
+    
+    /* ===== SIDEBAR ===== */
+    .sidebar {
+      width: 260px;
+      background: url('Image/BG.jpg') no-repeat center center fixed;
+      background-size: 100% 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 1.5rem 1rem;
+      box-shadow: 2px 0 15px rgba(0, 0, 0, 0.4);
+      z-index: 100;
+      transition: var(--transition);
+    }
+    
+    .logo-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      margin-bottom: 2rem;
+      padding: 0.5rem;
+    }
+    
+    .logo-container i {
+      font-size: 1.8rem;
+      color: var(--accent);
+    }
+    
+    .sidebar h2 {
+      font-weight: 700;
+      font-size: 1.8rem;
+      letter-spacing: 1px;
+      user-select: none;
+      background: linear-gradient(to right, var(--accent), #7bdff2);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    
+    .nav {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    
+    .nav a {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.9rem 1rem;
+      border-radius: 12px;
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 500;
+      transition: var(--transition);
+      user-select: none;
+    }
+    
+    .nav a i {
+      width: 24px;
+      text-align: center;
+      font-size: 1.1rem;
+    }
+    
+    .nav a:hover,
+    .nav a:focus,
+    .nav a.active {
+      background: rgba(76, 201, 240, 0.15);
+      color: white;
+      outline: none;
+    }
+    
+    .nav a.active {
+      background: rgba(76, 201, 240, 0.25);
+    }
+    
+    .admin-info {
+      text-align: center;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      user-select: none;
+      padding: 1rem 0.5rem;
+      margin-top: 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .admin-avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      margin: 0 auto 0.75rem;
+      background: linear-gradient(135deg, var(--accent), #2a9d8f);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+    
+    .admin-info a {
+      color: var(--accent);
+      text-decoration: none;
+      transition: var(--transition);
+    }
+    
+    .admin-info a:hover {
+      text-decoration: underline;
+    }
+    
+    /* ===== MAIN CONTENT ===== */
+    .main {
+      flex: 1;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      padding: 2rem;
+      overflow-y: auto;
+    }
+    
+    .header-container {
+      grid-column: 1 / -1;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    
+    .header {
+      font-size: 2rem;
+      font-weight: 700;
+      user-select: none;
+    }
+    
+    .hamburger {
+      display: none;
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      border-radius: 8px;
+      width: 45px;
+      height: 45px;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    
+    .hamburger:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+    
+    /* ===== CARDS ===== */
+    .card {
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
+    }
+    
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+    }
+    
+    .card h3 {
+      font-weight: 600;
+      font-size: 1.25rem;
+      user-select: none;
+    }
+    
+    .card-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+    }
+    
+    /* Specific card styles */
+    .system-performance {
+      grid-column: span 2;
+    }
+    
+    .system-performance .card-icon {
+      background: rgba(0, 123, 255, 0.2);
+      color: #4d9fff;
+    }
+    
+    .chart-container {
+      position: relative;
+      height: 300px;
+      width: 100%;
+      margin: 0.5rem 0 1.5rem;
+    }
+    
+    .performance-values {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 1rem;
+      font-weight: 500;
+      color: var(--text);
+      user-select: none;
+    }
+    
+    .metric-card {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 0.9rem;
+      text-align: center;
+    }
+    
+    .metric-card .value {
+      font-weight: 700;
+      font-size: 1.2rem;
+      margin-top: 0.3rem;
+      display: block;
+    }
+    
+    .min .value { color: #4d9fff; }
+    .max .value { color: #ff6b6b; }
+    .avg .value { color: #51cf66; }
+    .current .value { color: var(--accent); }
+    
+    .system-status .card-icon {
+      background: rgba(61, 220, 151, 0.2);
+      color: var(--success);
+    }
+    
+    .status-indicator {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
+      padding: 1rem;
+    }
+    
+    .status-circle {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: conic-gradient(var(--success) 360deg, rgba(61, 220, 151, 0.1) 0deg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+      position: relative;
+      box-shadow: 0 0 20px rgba(61, 220, 151, 0.3);
+    }
+    
+    .status-circle::before {
+      content: '';
+      position: absolute;
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(5px);
+    }
+    
+    .status-text {
+      position: relative;
+      z-index: 1;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--success);
+    }
+    
+    .status-label {
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+    
+    .notifications .card-icon {
+      background: rgba(255, 193, 7, 0.2);
+      color: var(--warning);
+    }
+    
+    .notification-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    
+    .notification-item {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 1rem;
+      display: flex;
+      gap: 0.8rem;
+      align-items: flex-start;
+    }
+    
+    .notification-icon {
+      min-width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+    }
+    
+    .notification-info {
+      flex: 1;
+    }
+    
+    .notification-title {
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+      color: white;
+    }
+    
+    .notification-time {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+    }
+    
+    .success .notification-icon {
+      background: rgba(61, 220, 151, 0.15);
+      color: var(--success);
+    }
+    
+    .warning .notification-icon {
+      background: rgba(255, 193, 7, 0.15);
+      color: var(--warning);
+    }
+    
+    .info .notification-icon {
+      background: rgba(77, 159, 255, 0.15);
+      color: #4d9fff;
+    }
+    
+    /* ===== RESPONSIVE DESIGN ===== */
+    @media (max-width: 1100px) {
+      .system-performance {
+        grid-column: 1 / -1;
+      }
+    }
+    
+    @media (max-width: 900px) {
+      .main {
+        padding: 1.5rem;
+      }
+      
+      .performance-values {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+      }
+      
+      .sidebar {
+        position: fixed;
+        left: -260px;
+        top: 0;
+        bottom: 0;
+        transition: var(--transition);
+      }
+      
+      .sidebar.active {
+        left: 0;
+      }
+      
+      .hamburger {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      
+      .header {
+        font-size: 1.75rem;
+      }
+      
+      .card {
+        grid-column: 1 / -1;
+      }
+      
+      .chart-container {
+        height: 250px;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .main {
+        padding: 1rem;
+        gap: 1rem;
+      }
+      
+      .performance-values {
+        grid-template-columns: 1fr;
+      }
+      
+      .chart-container {
+        height: 200px;
+      }
+      
+      .header {
+        font-size: 1.5rem;
+      }
+      
+      .card h3 {
+        font-size: 1.1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <aside class="sidebar" id="sidebar">
+      <div>
+        <div class="logo-container">
+          <i class="fas fa-chart-network"></i>
+          <h2>BUID</h2>
+        </div>
+        
+        <nav class="nav" role="navigation" aria-label="Sidebar Navigation">
+          <a href="<%= ResolveUrl("~/Admin-Dashboard.aspx") %>" class="active" tabindex="0">
+            <i class="fas fa-tachometer-alt"></i>
+            Dashboard
+          </a>
+          <a href="<%= ResolveUrl("~/user-managment.aspx") %>" tabindex="0">
+            <i class="fas fa-users-cog"></i>
+            User Management
+          </a>
+          <a href="#" tabindex="0">
+            <i class="fas fa-cog"></i>
+            Settings
+          </a>
+          <a href="#" tabindex="0">
+            <i class="fas fa-chart-bar"></i>
+            Reports
+          </a>
+          <a href="<%= ResolveUrl("~/Archive-Records.aspx") %>" tabindex="0">
+            <i class="fas fa-archive"></i>
+            Archive Records
+          </a>
+        </nav>
+      </div>
+      
+      <div class="admin-info" aria-label="Admin Information">
+        <div class="admin-avatar">JD</div>
+        Admin<br />
+        <a href="mailto:admin@buid.example" style="color: var(--accent); text-decoration: none;">admin@buid.example</a>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="header-container">
+        <h1 class="header">Admin Dashboard</h1>
+        <button class="hamburger" id="hamburger" aria-label="Toggle sidebar">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
+
+      <section class="card system-performance" aria-labelledby="performanceHeading">
+        <div class="card-header">
+          <h3 id="performanceHeading">System Performance</h3>
+          <div class="card-icon">
+            <i class="fas fa-chart-line"></i>
+          </div>
+        </div>
+        
+        <div class="chart-container">
+          <canvas id="systemChart" aria-label="System performance chart" role="img"></canvas>
+        </div>
+        
+        <div class="performance-values" aria-live="polite" aria-atomic="true">
+          <div class="metric-card min">
+            <span>Min</span>
+            <span class="value">9% / 38%</span>
+          </div>
+          <div class="metric-card max">
+            <span>Max</span>
+            <span class="value">24% / 45%</span>
+          </div>
+          <div class="metric-card avg">
+            <span>Avg</span>
+            <span class="value">15% / 41%</span>
+          </div>
+          <div class="metric-card current">
+            <span>Current</span>
+            <span class="value" id="currentValues">19% / 40%</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="card system-status" aria-labelledby="statusHeading">
+        <div class="card-header">
+          <h3 id="statusHeading">System Status</h3>
+          <div class="card-icon">
+            <i class="fas fa-server"></i>
+          </div>
+        </div>
+        
+        <div class="status-indicator">
+          <div class="status-circle">
+            <div class="status-text">OK</div>
+          </div>
+          <div class="status-label">Operational</div>
+        </div>
+      </section>
+
+      <section class="card notifications" aria-labelledby="notificationsHeading">
+        <div class="card-header">
+          <h3 id="notificationsHeading">Recent Notifications</h3>
+          <div class="card-icon">
+            <i class="fas fa-bell"></i>
+          </div>
+        </div>
+        
+        <div class="notification-list">
+          <div class="notification-item success">
+            <div class="notification-icon">
+              <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="notification-info">
+              <div class="notification-title">New Backup Created</div>
+              <div>System backup completed successfully</div>
+              <div class="notification-time">2 minutes ago</div>
+            </div>
+          </div>
+          
+          <div class="notification-item warning">
+            <div class="notification-icon">
+              <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <div class="notification-info">
+              <div class="notification-title">Storage Warning</div>
+              <div>Disk space at 85% capacity</div>
+              <div class="notification-time">1 hour ago</div>
+            </div>
+          </div>
+          
+          <div class="notification-item info">
+            <div class="notification-icon">
+              <i class="fas fa-info-circle"></i>
+            </div>
+            <div class="notification-info">
+              <div class="notification-title">System Update</div>
+              <div>New security patches available</div>
+              <div class="notification-time">3 hours ago</div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+      // Toggle sidebar on mobile
+      const hamburger = document.getElementById('hamburger');
+      const sidebar = document.getElementById('sidebar');
+
+      hamburger.addEventListener('click', () => {
+          sidebar.classList.toggle('active');
+          hamburger.innerHTML = sidebar.classList.contains('active')
+              ? '<i class="fas fa-times"></i>'
+              : '<i class="fas fa-bars"></i>';
+      });
+
+      // Close sidebar when clicking navigation links on mobile
+      document.querySelectorAll('.nav a').forEach(link => {
+          link.addEventListener('click', () => {
+              if (window.innerWidth <= 768) {
+                  sidebar.classList.remove('active');
+                  hamburger.innerHTML = '<i class="fas fa-bars"></i>';
+              }
+          });
+      });
+
+      // Initialize chart
+      const ctx = document.getElementById('systemChart').getContext('2d');
+      const data = {
+          labels: Array(20).fill(''),
+          datasets: [
+              {
+                  label: 'Memory Usage',
+                  data: Array(20).fill(20),
+                  borderColor: 'rgba(77, 159, 255, 1)',
+                  backgroundColor: 'rgba(77, 159, 255, 0.2)',
+                  fill: true,
+                  tension: 0.4,
+                  pointRadius: 0,
+              },
+              {
+                  label: 'CPU Usage',
+                  data: Array(20).fill(40),
+                  borderColor: 'rgba(255, 193, 7, 1)',
+                  backgroundColor: 'rgba(255, 193, 7, 0.2)',
+                  fill: true,
+                  tension: 0.4,
+                  pointRadius: 0,
+              },
+          ],
+      };
+
+      const config = {
+          type: 'line',
+          data: data,
+          options: {
+              animation: false,
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: {
+                  y: {
+                      beginAtZero: true,
+                      max: 100,
+                      grid: {
+                          color: 'rgba(255, 255, 255, 0.1)',
+                      },
+                      ticks: {
+                          color: 'rgba(255, 255, 255, 0.7)',
+                      }
+                  },
+                  x: {
+                      grid: {
+                          display: false,
+                      },
+                      ticks: {
+                          display: false
+                      }
+                  }
+              },
+              plugins: {
+                  legend: {
+                      position: 'top',
+                      labels: {
+                          color: '#fff',
+                          font: {
+                              size: 14,
+                              weight: '500',
+                          },
+                      },
+                  },
+              },
+              interaction: {
+                  intersect: false,
+                  mode: 'index',
+              },
+          },
+      };
+
+      const systemChart = new Chart(ctx, config);
+
+      // Simulate live data updates
+      function updateChart() {
+          const mem = Math.floor(Math.random() * 15) + 10;
+          const cpu = Math.floor(Math.random() * 10) + 35;
+
+          data.datasets[0].data.push(mem);
+          data.datasets[1].data.push(cpu);
+          data.labels.push('');
+
+          if (data.labels.length > 20) {
+              data.labels.shift();
+              data.datasets[0].data.shift();
+              data.datasets[1].data.shift();
+          }
+
+          systemChart.update();
+          document.getElementById('currentValues').textContent = `${mem}% / ${cpu}%`;
+      }
+
+      setInterval(updateChart, 1500);
+
+      // Initial update
+      updateChart();
+  </script>
+</body>
+</html>
